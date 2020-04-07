@@ -87,6 +87,7 @@
           </a>
         </v-row>
       </v-col>
+      <v-btn small color="primary">Primary</v-btn>
     </v-row>
   </v-container>
 </template>
