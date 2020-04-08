@@ -1,14 +1,17 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+
+   
+     <router-view class="view"/>
+       <!-- </router-view> -->
   </div>
 </template>
 
 <style lang="scss">
+
+.view{
+  margin-top: 5%;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

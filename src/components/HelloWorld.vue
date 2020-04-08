@@ -1,152 +1,99 @@
 <template>
   <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        />
-      </v-col>
+    <v-row align="center">
+      <v-card class="mx-auto" max-width="344">
+        <v-card-text>
+          <h1>Bienvenid@ a Konecta digital</h1>
+          <v-form ref="form" class="justify-center">
+            <v-text-field
+              color="teal"
+              v-model="name"
+              :rules="nameRules"
+              label="Correo"
+              required
+              @input="message=''"
+              v-on:input="messageStatus()"
+            ></v-text-field>
 
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
+            <v-text-field
+              color="teal"
+              type="password"
+              v-model="password"
+              :rules="passwordRules"
+              label="Contraseña"
+              required
+              @input="message=''"
+              v-on:input="messageStatus()"
+            ></v-text-field>
 
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a
-            href="https://community.vuetifyjs.com"
-            target="_blank"
-          >Discord Community</a>
-        </p>
-      </v-col>
+            <v-btn color="teal" class="mr-4 white--text" x-large @click="validate">INGRESAR</v-btn>
 
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          What's next?
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Important Links
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Ecosystem
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
-      </v-col>
-      <v-btn small color="primary">Primary</v-btn>
+            <p v-if="messageState" class="feedback-message color-message">{{this.message}}</p>
+            <p v-else class="message-blank color-message">{{this.message}}.</p>
+          </v-form>
+          <div class="my-2">
+            <router-link to="/Inicio">Inicio</router-link>
+          </div>
+        </v-card-text>
+      </v-card>
     </v-row>
   </v-container>
 </template>
 
 <script>
-  export default {
-    name: 'HelloWorld',
+export default {
+  name: "HelloWorld",
 
-    data: () => ({
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader',
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify',
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify',
-        },
-      ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com',
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com',
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuejs.com/vuetify',
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs',
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify',
-        },
-      ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer',
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/layout/pre-defined',
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-        },
-      ],
-    }),
+  data: () => ({
+    messageState: false,
+    message: "",
+    valid: true,
+    name: "",
+    nameRules: [
+      v => !!v || "Se requiere ingresar correo",
+      v => /.+@.+\..+/.test(v) || "Por favor, ingrese un correo válido"
+      //   v => (v && v.length <= 10) || "Name must be less than 10 characters"
+    ],
+    password: "",
+    passwordRules: [v => !!v || "Requiere ingresar contraseña"]
+  }),
+
+  methods: {
+    validate() {
+      
+      if (
+        this.password == "1234" &&
+        this.name == "admin@admin.com" &&
+        this.$refs.form.validate()
+      ) {
+        // this.loginState = false;
+        // this.$emit("validate", this.loginState);
+        console.log("logueado");
+      } else {
+        this.messageState = true;
+        this.message = "Contraseña o correo incorrecta";
+      }
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+        messageStatus(){
+      this.messageState = false;
+    }
   }
+};
 </script>
+<style>
+.color-message {
+  color: #ff5252 !important;
+  font-size: 12px;
+  margin-top: 0.5em;
+}
+
+.message-blank {
+  visibility: hidden;
+}
+</style>
