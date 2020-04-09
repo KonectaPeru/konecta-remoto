@@ -9,9 +9,10 @@
 
 <style lang="scss">
 
-.view{
-  margin-top: 5%;
+.v-application--wrap{
+ background-color: #FAFAFA !important;
 }
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

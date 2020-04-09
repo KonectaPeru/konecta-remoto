@@ -6,6 +6,7 @@
           <h1>Bienvenid@ a Konecta digital</h1>
           <v-form ref="form" class="justify-center">
             <v-text-field
+            class="form-margin"
               color="teal"
               v-model="name"
               :rules="nameRules"
@@ -16,6 +17,7 @@
             ></v-text-field>
 
             <v-text-field
+            class="form-margin"
               color="teal"
               type="password"
               v-model="password"
@@ -26,7 +28,7 @@
               v-on:input="messageStatus()"
             ></v-text-field>
 
-            <v-btn color="teal" class="mr-4 white--text" x-large @click="validate">INGRESAR</v-btn>
+            <v-btn color="teal" class="mr-4 white--text form-margin" x-large @click="validate">INGRESAR</v-btn>
 
             <p v-if="messageState" class="feedback-message color-message">{{this.message}}</p>
             <p v-else class="message-blank color-message">{{this.message}}.</p>
@@ -95,5 +97,9 @@ export default {
 
 .message-blank {
   visibility: hidden;
+}
+
+.form-margin{
+  margin-top: 2em !important;
 }
 </style>
