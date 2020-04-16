@@ -6,10 +6,10 @@
           <h1>Bienvenid@ a Konecta digital</h1>
           <v-form ref="form" class="justify-center">
             <v-text-field
-            class="form-margin"
+              class="form-margin"
               color="teal"
-              v-model="name"
-              :rules="nameRules"
+              v-model="email"
+              :rules="emailRules"
               label="Correo"
               required
               @input="message=''"
@@ -17,7 +17,7 @@
             ></v-text-field>
 
             <v-text-field
-            class="form-margin"
+              class="form-margin"
               color="teal"
               type="password"
               v-model="password"
@@ -28,14 +28,17 @@
               v-on:input="messageStatus()"
             ></v-text-field>
 
-            <v-btn color="teal" class="mr-4 white--text form-margin" x-large @click="validate">INGRESAR</v-btn>
+            <v-btn
+              color="teal"
+              class="mr-4 white--text form-margin"
+              x-large
+              @click="validate"
+            >INGRESAR</v-btn>
 
             <p v-if="messageState" class="feedback-message color-message">{{this.message}}</p>
             <p v-else class="message-blank color-message">{{this.message}}.</p>
           </v-form>
-          <div class="my-2">
-            <router-link to="/Inicio">Inicio</router-link>
-          </div>
+
         </v-card-text>
       </v-card>
     </v-row>
@@ -43,15 +46,23 @@
 </template>
 
 <script>
+import { db } from "../db";
+import firebase from "firebase";
+require("firebase/auth");
+
 export default {
-  name: "HelloWorld",
+  name: "login",
+  firebase: {
+    users: db.ref("users")
+  },
 
   data: () => ({
+    users: [],
     messageState: false,
     message: "",
     valid: true,
-    name: "",
-    nameRules: [
+    email: "",
+    emailRules: [
       v => !!v || "Se requiere ingresar correo",
       v => /.+@.+\..+/.test(v) || "Por favor, ingrese un correo válido"
       //   v => (v && v.length <= 10) || "Name must be less than 10 characters"
@@ -62,19 +73,20 @@ export default {
 
   methods: {
     validate() {
-      
-      if (
-        this.password == "1234" &&
-        this.name == "admin@admin.com" &&
-        this.$refs.form.validate()
-      ) {
-        // this.loginState = false;
-        // this.$emit("validate", this.loginState);
-        console.log("logueado");
-      } else {
-        this.messageState = true;
-        this.message = "Contraseña o correo incorrecta";
-      }
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(this.email, this.password)
+        .then(user => {
+          this.$router.replace("/inicio");
+          console.log(user.user.uid);
+          this.$emit("idUser", user.user.uid);
+        })
+        .catch(err => {
+          console.log(err.message);
+          this.messageState = true;
+          this.message = "Contraseña o correo incorrecta";
+               
+        });
     },
     reset() {
       this.$refs.form.reset();
@@ -82,7 +94,7 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
-        messageStatus(){
+    messageStatus() {
       this.messageState = false;
     }
   }
@@ -99,7 +111,7 @@ export default {
   visibility: hidden;
 }
 
-.form-margin{
+.form-margin {
   margin-top: 2em !important;
 }
 </style>

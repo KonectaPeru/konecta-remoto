@@ -25,7 +25,7 @@
 
       <router-link to="/Inicio">Inicio</router-link>|
       <router-link to="/">Mis indicadores</router-link>
-      <v-btn color="teal" class="mr-4 white--text">@name</v-btn>
+      <v-btn color="teal" class="mr-4 white--text" @click="logout()" >@name</v-btn>
 
       <!-- <v-btn href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
         <span class="mr-2">Inicio</span>
@@ -44,7 +44,7 @@
             <h1>MIS INDICADORES</h1>
             <p>¡En construcción!</p>
 
-            <v-btn color="teal" class="mr-4 white--text form-margin ">VER INDICADORES</v-btn>
+            <v-btn color="teal" class="mr-4 white--text form-margin">VER INDICADORES</v-btn>
           </v-card-text>
         </v-card>
         <v-card class="mx-auto col-12 height-300">
@@ -102,7 +102,6 @@
 
           <v-btn color="teal" class="mr-4 white--text form-margin" x-large>CONECTARSE</v-btn>
 
-
           <h1>NOTICIAS DEL DÍA</h1>
         </v-card-text>
       </v-card>
@@ -117,7 +116,6 @@
         <v-card class="mx-auto col-12 height-300">
           <v-card-text>
             <h1>Chat</h1>
-
           </v-card-text>
         </v-card>
       </div>
@@ -126,14 +124,33 @@
 </template>
 
 <script>
+import { db } from "../db";
+import firebase from "firebase";
+require("firebase/auth");
+
 export default {
   name: "Inicio",
 
   components: {},
-
-  data: () => ({
+    data: () => ({
+      users: []
     //
-  })
+  }),
+  firebase: {
+    users: db.ref("users"),
+  },
+  methods: {
+    logout() {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.$router.replace("signin");
+        });
+    }
+  },
+
+
 };
 </script>
 
@@ -153,12 +170,12 @@ export default {
   margin-top: 1em;
 }
 
-.form-margin{
+.form-margin {
   margin-bottom: 2em;
   margin-top: 2em;
 }
 
-.menu-link{
+.menu-link {
   display: flex;
   align-content: flex-start;
 }
