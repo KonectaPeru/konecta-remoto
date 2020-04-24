@@ -4,7 +4,7 @@
       <v-card class="mx-auto" max-width="344">
         <v-card-text>
           <h1>Bienvenid@ a Konecta digital</h1>
-          <v-form ref="form" class="justify-center">
+          <v-form ref="form" class="justify-center" >
             <v-text-field
               class="form-margin"
               color="teal"
@@ -29,6 +29,7 @@
             ></v-text-field>
 
             <v-btn
+            
               color="teal"
               class="mr-4 white--text form-margin"
               x-large
@@ -60,7 +61,7 @@ export default {
     users: [],
     messageState: false,
     message: "",
-    valid: true,
+ 
     email: "",
     emailRules: [
       v => !!v || "Se requiere ingresar correo",
