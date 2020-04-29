@@ -22,10 +22,9 @@
       </div>
 
       <v-spacer></v-spacer>
-
-      <router-link to="/Inicio">Inicio</router-link>|
-      <router-link to="/">Mis indicadores</router-link>
-      <v-btn color="teal" class="mr-4 white--text" @click="logout()">{{currentUser.socialName}}</v-btn>
+      <router-link class="menu-margin" to="/Inicio">Inicio</router-link>
+      <router-link class="menu-margin" to="/">Mis indicadores</router-link>
+      <p class="userName menu-margin">{{currentUser.socialName}}</p>
 
       <!-- <v-btn href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
         <span class="mr-2">Inicio</span>
@@ -38,8 +37,8 @@
     </v-app-bar>
 
     <div class="container-desktop">
-      <div class="mx-auto col-3 column-padding">
-        <v-card class="mx-auto col-12 height-250 margin-2">
+      <div class="mx-auto column-padding">
+        <v-card class="mx-auto col-12 height-200 margin-2">
           <v-card-text>
             <h1>MIS INDICADORES</h1>
             <p>¡En construcción!</p>
@@ -61,7 +60,7 @@
             </div>
             <div class="my-2 menu-link">
               <img src="../assets/link.png" alt />
-              <a href="https://vivekonecta.pe">WORKPLACE</a>
+              <a href="https://www.workplace.com/">WORKPLACE</a>
             </div>
             <div class="my-2 menu-link">
               <img src="../assets/link.png" alt />
@@ -83,13 +82,17 @@
               <img src="../assets/link.png" alt />
               <a href="https://vivekonecta.pe">SOPORTE TÉCNICO</a>
             </div>
+            <div class="my-2 menu-link">
+              <img src="../assets/logout.svg" class="menu-icons" alt />
+              <a @click="logout()">CERRAR SESIÓN</a>
+            </div>
           </v-card-text>
         </v-card>
       </div>
 
-      <v-card class="mx-auto col-3">
+      <v-card class="mx-auto column-padding">
         <v-card-text>
-          <h1>HOLA, {{currentUser.nombre}} {{currentUser.apellidoP}}</h1>
+          <h1 class="tittles">HOLA, {{currentUser.nombre}} {{currentUser.apellidoP}}</h1>
           <h2>¿Cómo te sientes hoy?</h2>
           <div class="feelings-container">
             <img class="img-style" src="../assets/cry.png" alt />
@@ -103,10 +106,21 @@
           <v-btn color="teal" class="mr-4 white--text form-margin" x-large>CONECTARSE</v-btn>
 
           <h1>NOTICIAS DEL DÍA</h1>
+          <div
+            class="chat-messages-style"
+            v-for="noticia in noticias"
+            v-bind:key="noticias[noticia]"
+          >
+            <p class="message-style">
+              <strong>{{noticia.name}}-{{noticia.cargo}}:</strong>
+              {{noticia.message}}
+            </p>
+            <p class="date-style">{{noticia.registerAt.date}} a las {{noticia.registerAt.hour}}</p>
+          </div>
         </v-card-text>
       </v-card>
-      <div class="mx-auto col-3 column-padding">
-        <v-card class="mx-auto col-12 height-250 margin-2">
+      <div class="mx-auto column-padding">
+        <v-card class="mx-auto col-12 height-200 margin-2">
           <v-card-text>
             <h1>PRÓXIMOS EVENTOS</h1>
 
@@ -119,7 +133,7 @@
               <h3>CHATS({{this.grupos.length}})</h3>
               <h3>{{this.currentChat.groupName}} ({{this.currentChat.members.length}})</h3>
             </div>
-            <div ref="chatDisplay" class="center height-200 chat-style">
+            <div ref="chatDisplay" class="center height-200 chat-style chatDisplay">
               <!-- for de mensajes
                 <p><strong>{{message.user}} + ":"</strong> {{message.message}}</p>
                   <p>{{message.date}} + "a las" + {{message.hour}}</p>
@@ -150,12 +164,11 @@
                 required
                 placeholder="Escribe aquí"
               ></v-text-field>
-              <v-btn
-                :disabled="!valid"
-                color="teal"
-                class="white--text"
-                @click="sendMessage"
-              >send</v-btn>
+              <button :disabled="!valid" class="button-send" @click="sendMessage">
+                <img src="../assets/send.svg" alt="enviar" class="width-40" />
+              </button>
+
+              <!-- <v-btn :disabled="!valid" color="teal" class="white--text" @click="sendMessage">send</v-btn> -->
             </v-form>
           </v-card-text>
         </v-card>
@@ -165,7 +178,7 @@
 </template>
 
 <script>
-//import { db } from "../db";
+import { news } from "../db";
 import moment from "moment";
 import firebase from "firebase";
 require("firebase/auth");
@@ -179,6 +192,8 @@ export default {
     messageToSend: "",
     currentUser: {},
     grupos: [],
+    noticias: [],
+    noticiasDesc: [],
     keyGrupos: [],
     userId: "",
     currentChat: {
@@ -191,10 +206,29 @@ export default {
     //
   }),
 
+
   mounted() {
+
+    // const todosRef = news    // setup adding childs and save the callback to remove it later
+    // todosRef.on(
+    //   'child_added',
+    //   (snapshot) => {
+    //     this.noticias=
+    //       snapshot.val()
+
+    //   },
+    //   // we are omitting this function for simplicity reasons
+     
+    // )
+
+    // console.log(this.noticias)
+
+
+
     // var messageDisplay = this.$refs.chatDisplay;
     // messageDisplay.scrollTop = messageDisplay.scrollHeight;
     let vm = this;
+
     vm.userId = firebase.auth().currentUser.uid;
     const userRef = firebase.database().ref("users/" + vm.userId);
     userRef
@@ -202,9 +236,9 @@ export default {
         let data = snapshot.val();
         vm.currentUser = data;
       })
-      .then(function() {
-        vm.getCurrentUserGroups();
-
+      .then(async function() {
+        await vm.getCurrentUserGroups();
+        vm.scrollToEnd();
         // firebase
         //   .database()
         //   .ref(
@@ -229,9 +263,23 @@ export default {
 
     // vm.getCurrentChat()
     //return vm.currentUser
+
+  },
+  firebase: {
+    noticias: news
   },
 
   methods: {
+    reverseNews(){
+     let news =  this.noticias.reverse();
+     console.log(news)
+     return news
+    },
+    scrollToEnd() {
+      var content = this.$refs.chatDisplay;
+      content.scrollTop = content.scrollHeight;
+      console.log("hola");
+    },
     gruposLength() {
       let length = 0;
       console.log(this.grupos);
@@ -261,14 +309,16 @@ export default {
     },
     isMember(key, data) {
       let _this = this;
-
+      let member = [];
       data.members.forEach(function(element) {
         if (element == _this.userId) {
           _this.keyGrupos.push(key);
           _this.grupos.push(data);
+          member.push(data);
           _this.getCurrentChat(key, data);
         }
       });
+      console.log(member);
     },
     getCurrentChat(key, data) {
       let _this = this;
@@ -297,7 +347,7 @@ export default {
       let chat = this.getChat(); //return firebase ref or id
       const messageKey = chat.push().key;
       chat.child(messageKey).set(message);
-      this.messageToSend = '';
+      this.messageToSend = "";
       console.log(registerAt);
     },
     getChat() {
@@ -339,7 +389,38 @@ export default {
 </script>
 
 <style lang="scss">
-.v-input__control{
+.width-40 {
+  width: 25px;
+  filter: invert(41%) sepia(97%) saturate(414%) hue-rotate(125deg)
+    brightness(93%) contrast(102%);
+}
+
+.width-40:hover {
+  filter: invert(78%) sepia(9%) saturate(2497%) hue-rotate(98deg)
+    brightness(79%) contrast(91%);
+}
+
+.button-send {
+}
+
+.menu-icons {
+  width: 15px;
+}
+
+.menu-margin {
+  margin-left: 10px !important;
+}
+
+.userName {
+  color: #42b983;
+  font-weight: 550;
+  margin-bottom: 0 !important;
+}
+
+.tittles {
+  margin-top: 12px;
+}
+.v-input__control {
   max-width: 95% !important;
 }
 .container-desktop {
@@ -349,18 +430,19 @@ export default {
   flex-direction: row;
   padding-top: 96px;
 }
-.font-text{
+.font-text {
   font-size: 12px !important;
 }
-.feelings-container, .send-row {
+.feelings-container,
+.send-row {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  margin-top:0.5em;
+  margin-top: 0.5em;
   width: 100%;
 }
 
-.v-text-field{
+.v-text-field {
   padding-top: 0 !important;
   margin-top: 0 !important;
 }
@@ -372,7 +454,7 @@ export default {
 }
 
 .chat-style {
-  border-width : 1px;
+  border-width: 1px;
   border-color: #e0e0e0;
   border-style: solid;
   border-radius: 5px;
@@ -454,6 +536,7 @@ export default {
 
 .column-padding {
   padding: 0 !important;
+  width: 30%;
 }
 
 #nav {
@@ -480,7 +563,6 @@ a:hover {
   color: #42b983 !important;
 }
 
-
 /* width */
 .chat-style::-webkit-scrollbar {
   width: 10px !important;
@@ -488,18 +570,29 @@ a:hover {
 
 /* Track */
 .chat-style::-webkit-scrollbar-track {
-  box-shadow:20px 20px 50px 10px rgba(#009688, 0.2) inset; 
+  box-shadow: 20px 20px 50px 10px rgba(#009688, 0.2) inset;
   border-radius: 5px !important;
 }
- 
+
 /* Handle */
 .chat-style::-webkit-scrollbar-thumb {
-  background: rgba(#009688, 0.5) !important; 
+  background: rgba(#009688, 0.5) !important;
   border-radius: 10px !important;
 }
 
 /* Handle on hover */
 .chat-style::-webkit-scrollbar-thumb:hover {
-  background: #42b983 !important; 
+  background: #42b983 !important;
+}
+
+//media queries
+@media (max-width: 767px) {
+  .container-desktop {
+    flex-direction: column;
+  }
+
+  .column-padding {
+    width: 90%;
+  }
 }
 </style>

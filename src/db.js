@@ -32,3 +32,4 @@ export const areas = db.ref('areas');
 export const cuentas = db.ref('cuentas');
 export const campanias = db.ref('campanias');
 export const cargos = db.ref('cargos');
+export const news = db.ref('noticias');
